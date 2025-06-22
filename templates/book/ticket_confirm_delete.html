@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Cancel Ticket{% endblock %}
+
+{% block body %}
+<div class="w3-display-middle" style="width:80%; margin-top: 30px;">
+  <div class="w3-container w3-white w3-padding-16" style="height: 600px; overflow-y: scroll;">
+    <div class="container" style="max-width: 600px; margin-top: 30px;">
+      <div class="row">
+        <div class="col-sm-12">
+
+          <div class="alert alert-danger">
+              Are you sure you want to cancel this ticket?
+          </div>
+
+          <table class="table table-bordered">
+            <tbody>
+              <tr>
+                <th>Passenger</th>
+                <td>{{ ticket.passenger }}</td>
+              </tr>
+              <tr>
+                <th>Train</th>
+                <td>{{ ticket.train.name }}</td>
+              </tr>
+              <tr>
+                <th>Compartment</th>
+                <td>{{ ticket.type }}</td>
+              </tr>
+              <tr>
+                <th>From</th>
+                <td>{{ ticket.source }} at {{ ticket.source_schedule.departure }}</td>
+              </tr>
+              <tr>
+                <th>To</th>
+                <td>{{ ticket.dest }} at {{ ticket.dest_schedule.arrival }}</td>
+              </tr>
+              <tr>
+                <th>Date</th>
+                <td>{{ ticket.date }}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <form action="" method="post">
+            {% csrf_token %}
+            <input type="submit" value="Cancel Ticket" class="btn btn-danger" />
+            <a href="{% url 'book:profile' %}" class="btn btn-secondary ms-2">Back to Profile</a>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

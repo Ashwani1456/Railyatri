@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}{{ source }} to {{ dest }}{% endblock %}
+
+{% block extra-head %}
+<style>
+  body {
+    margin: 0;
+    background: url("{% static 'download.jpg' %}") no-repeat center center fixed;
+    background-size: cover;
+    font-family: "Segoe UI", sans-serif;
+  }
+
+  .search-container {
+    max-width: 960px;
+    margin: 40px auto;
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 12px;
+    padding: 32px 28px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .journey-info {
+    text-align: center;
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 24px;
+  }
+
+  .journey-info span {
+    color: #1a73e8;
+  }
+
+  .train-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+
+  .train-card h5 {
+    margin: 0 0 10px;
+    font-size: 18px;
+    color: #111;
+  }
+
+  .toggle-btn {
+    float: right;
+    background-color: #1a73e8;
+    color: #fff;
+    border: none;
+    padding: 6px 14px;
+    font-size: 13px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .toggle-btn[aria-expanded="true"] {
+    background-color: #125dc1;
+  }
+
+  .seat-section {
+    margin-top: 12px;
+    display: none;
+  }
+
+  .seat-section.active {
+    display: block;
+  }
+
+  .seat-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+
+  .seat-table th, .seat-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+  }
+
+  .seat-table th {
+    background-color: #f1f1f1;
+  }
+
+  .book-toggle {
+    margin-top: 12px;
+    background-color: #e8f0fe;
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 6px;
+  }
+
+  .inline-form {
+    margin-top: 16px;
+    display: none;
+    padding-top: 16px;
+    border-top: 1px solid #ddd;
+  }
+
+  .inline-form input,
+  .inline-form select,
+  .inline-form button {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    margin: 6px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+
+  .inline-form button {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+
+  .no-results {
+    text-align: center;
+    font-size: 17px;
+    font-weight: 600;
+    color: #444;
+    padding: 40px 0;
+  }
+
+  .complex-link {
+    display: block;
+    text-align: center;
+    margin-top: 24px;
+    font-weight: 600;
+    color: #1a73e8;
+  }
+
+  .complex-link:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    .toggle-btn {
+      float: none;
+      width: 100%;
+      margin-top: 10px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="search-container">
+  {% if results %}
+    <div class="journey-info">
+      Showing results from <span>{{ source.name }}</span> to <span>{{ dest.name }}</span> on <span>{{ date }}</span>
+    </div>
+
+    <ul style="list-style: none; padding: 0;">
+      {% for train, src, dst, seats, fare in results %}
+      <li class="train-card">
+        <h5>{{ train.name }} ({{ train.number }})</h5>
+        <button class="toggle-btn" type="button" aria-expanded="false">Show Seats</button>
+        <table>
+          <tr><th>Departure:</th><td>{{ src.departure }}</td></tr>
+          <tr><th>Arrival:</th><td>{{ dst.arrival }}</td></tr>
+          <tr><th>Date:</th><td>{{ date }}</td></tr>
+        </table>
+
+        <div class="seat-section">
+          <table class="seat-table">
+            <thead><tr><th>Class</th><th>Available</th><th>Fare</th></tr></thead>
+            <tbody>
+              {% for cls in class_types %}
+              <tr>
+                <td><strong>{{ cls }}</strong></td>
+                <td>{{ seats|get_item:cls }}</td>
+                <td>₹{{ fare|get_item:cls }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          <div style="text-align:center;">
+            <button class="book-toggle" type="button">Book Ticket</button>
+          </div>
+
+          <div class="inline-form">
+            <form method="POST" action="{% url 'book:book_ticket' %}">
+              {% csrf_token %}
+              <input type="hidden" name="train" value="{{ train.pk }}">
+              <input type="hidden" name="date" value="{{ date }}">
+              <label>Passenger:</label>
+              <input type="text" name="passenger" placeholder="Your Name" required>
+              <label>Class:</label>
+              <select name="class_type" required>
+                <option value="">-- Select --</option>
+                {% for cls in class_types %}
+                <option value="{{ cls }}">{{ cls }}</option>
+                {% endfor %}
+              </select>
+              <button type="submit">Confirm Booking</button>
+            </form>
+          </div>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="no-results">No trains found for this route on {{ date }}.</p>
+  {% endif %}
+
+  {% if source and dest %}
+  <a class="complex-link" href="{% url 'book:complexSearch' source.pk dest.pk date %}">
+    Check intermediate route trains →
+  </a>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block end-scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".toggle-btn").forEach(button => {
+      button.addEventListener("click", () => {
+        const section = button.closest(".train-card").querySelector(".seat-section");
+        const active = section.classList.toggle("active");
+        button.innerText = active ? "Hide Seats" : "Show Seats";
+        button.setAttribute("aria-expanded", active.toString());
+      });
+    });
+
+    document.querySelectorAll(".book-toggle").forEach(button => {
+      button.addEventListener("click", () => {
+        const form = button.closest(".seat-section").querySelector(".inline-form");
+        const isVisible = form.style.display === "block";
+        form.style.display = isVisible ? "none" : "block";
+        button.innerText = isVisible ? "Book Ticket" : "Cancel";
+      });
+    });
+  });
+</script>
+{% endblock %}

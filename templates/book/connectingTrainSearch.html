@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% load custom_filters %}
+
+{% block title %}{{ source }} to {{ dest }}{% endblock %}
+
+{% block extra-head %}
+<style>
+  body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: url('/static/download.jpg') no-repeat center center fixed;
+    background-size: cover;
+  }
+
+  .container-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 92%;
+    max-width: 1000px;
+    height: 82vh;
+    padding: 24px;
+    overflow-y: auto;
+    background-color: rgba(255, 255, 255, 0.94);
+    border-radius: 12px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  .train-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    margin-bottom: 18px;
+    padding: 16px;
+  }
+
+  .train-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .train-header h6 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .toggle-btn {
+    background-color: #1a73e8;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .toggle-btn:hover {
+    background-color: #1558b0;
+  }
+
+  .info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 14px;
+  }
+
+  .info-table th, .info-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+  }
+
+  .info-table th {
+    background-color: #f7f7f7;
+  }
+
+  .seat-info.hidden {
+    display: none;
+  }
+
+  .no-results {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 500;
+    margin-top: 48px;
+    color: #444;
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container-overlay">
+  {% if results %}
+    <ul style="list-style: none; padding: 0;">
+      {% for train1, train2, src, via1, via2, dest, chart1, chart2, fare in results %}
+      <li class="train-card">
+        <div class="train-header">
+          <h6>{{ train1.name }} ➜ {{ train2.name }}</h6>
+          <button class="toggle-btn">Show Seats</button>
+        </div>
+
+        <div class="train-info">
+          <table class="info-table">
+            <tr>
+              <th>Leg 1</th>
+              <td>{{ src.station }} → {{ via1.station }} | {{ src.departure }} - {{ via1.arrival }}</td>
+            </tr>
+            <tr>
+              <th>Leg 2</th>
+              <td>{{ via2.station }} → {{ dest.station }} | {{ via2.departure }} - {{ dest.arrival }}</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="seat-info hidden">
+          <table class="info-table">
+            <thead>
+              <tr>
+                <th>Class</th><th>Chart 1</th><th>Chart 2</th><th>Total Fare</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for class_type in class_types %}
+              <tr>
+                <td>
+                  <a href="{% url 'book:complexBook' chart1.pk chart2.pk src.pk via1.pk via2.pk dest.pk class_type date %}">
+                    {{ class_type }}
+                  </a>
+                </td>
+                <td>{{ chart1|get_dynamic:class_type|default:"–" }}</td>
+                <td>{{ chart2|get_dynamic:class_type|default:"–" }}</td>
+                <td>₹{{ fare|get_item:class_type }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="no-results">No connecting trains found for {{ source }} → {{ dest }} on {{ date }}.</p>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block end-scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".toggle-btn").forEach(button => {
+      button.addEventListener("click", () => {
+        const card = button.closest(".train-card");
+        const seatInfo = card.querySelector(".seat-info");
+        const isHidden = seatInfo.classList.contains("hidden");
+
+        document.querySelectorAll(".seat-info").forEach(el => el.classList.add("hidden"));
+        document.querySelectorAll(".train-info").forEach(el => el.classList.remove("hidden"));
+        document.querySelectorAll(".toggle-btn").forEach(btn => btn.innerText = "Show Seats");
+
+        if (isHidden) {
+          seatInfo.classList.remove("hidden");
+          card.querySelector(".train-info").classList.add("hidden");
+          button.innerText = "Train Info";
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

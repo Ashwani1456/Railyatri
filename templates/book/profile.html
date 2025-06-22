@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block title %}Your Bookings{% endblock %}
+
+{% block extra-head %}
+<style>
+  .profile-container {
+    max-width: 1100px;
+    margin: 80px auto 40px;
+    padding: 0 20px;
+  }
+
+  .ticket-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 24px;
+  }
+
+  .ticket-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .ticket-card table {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+
+  .ticket-card th {
+    text-align: left;
+    font-weight: 600;
+    color: #1a73e8;
+    padding: 6px 0;
+    width: 40%;
+  }
+
+  .ticket-card td {
+    padding: 6px 0;
+  }
+
+  .ticket-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  .btn.print {
+    background: #1a73e8;
+    color: white;
+  }
+
+  .btn.print:hover {
+    background: #1259b2;
+  }
+
+  .btn.cancel {
+    background: #d93025;
+    color: white;
+  }
+
+  .btn.cancel:hover {
+    background: #a52714;
+  }
+
+  .no-bookings {
+    text-align: center;
+    color: #777;
+    font-size: 18px;
+    margin-top: 60px;
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="profile-container">
+  <h2 class="w3-center w3-text-blue">Your Booked Tickets</h2>
+
+  {% if tickets %}
+  <div class="ticket-grid">
+    {% for ticket in tickets %}
+    <div class="ticket-card">
+      <div class="ticket-content">
+        <table>
+          <tr><th>Passenger</th><td>{{ ticket.passenger }}</td></tr>
+          <tr><th>Train</th><td>{{ ticket.train.name }}</td></tr>
+          <tr><th>Class</th><td>{{ ticket.get_type_display }}</td></tr>
+          <tr><th>From</th><td>{{ ticket.source }} at {{ ticket.source_schedule.departure }}</td></tr>
+          <tr><th>To</th><td>{{ ticket.dest }} at {{ ticket.dest_schedule.arrival }}</td></tr>
+          <tr><th>Date</th><td>{{ ticket.date }}</td></tr>
+          <tr><th>Fare</th><td>₹ {{ ticket.fare }}</td></tr>
+        </table>
+      </div>
+      <div class="ticket-buttons">
+        <button class="btn print" onclick="printTicket(this)">Print Ticket</button>
+        <a href="{% url 'book:cancel' ticket.pk %}">
+          <button class="btn cancel">Cancel</button>
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="no-bookings">No bookings found.</p>
+  {% endif %}
+</div>
+
+<script>
+  function printTicket(button) {
+    const card = button.closest(".ticket-card").cloneNode(true);
+    const newWin = window.open("", "_blank");
+    newWin.document.write(`
+      <html>
+        <head>
+          <title>Print Ticket</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 40px; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { padding: 8px 12px; border: 1px solid #ccc; text-align: left; }
+            th { background: #f1f1f1; color: #1a73e8; }
+          </style>
+        </head>
+        <body>
+          <h2 style="text-align: center; font-family: Arial;">
+  Ticket
+</h2>
+          ${card.querySelector(".ticket-content").innerHTML}
+        </body>
+      </html>
+    `);
+    newWin.document.close();
+    newWin.focus();
+    newWin.print();
+    newWin.close();
+  }
+</script>
+{% endblock %}
