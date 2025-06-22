@@ -56,19 +56,4 @@ In the given project we will be developing a SQL Database which will help users 
 
 #### 7. Display Connecting Trains
 <div align="center">
-  <img src="https://raw.githubusercontent.com/DhvanilP/OuRCTC/master/im7.png" />
-</div>
-
-#### 8. Booked Ticket History
-<div align="center">
-  <img src="https://raw.githubusercontent.com/DhvanilP/OuRCTC/master/im8.png" />
-</div>
-
-
-
-## Team Members
-
-* [Suyash Ghuge](https://github.com/suyash0103), 16IT114
-* [Nishant Kumar](https://github.com/NishantKr97),16IT123
-* [Shreyas Shankar](https://github.com/shrey920), 16IT138
-* [Dhvanil Parikh](https://github.com/DhvanilP), 16IT217
+  
