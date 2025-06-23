@@ -1,0 +1,57 @@
+# ── Web Framework ──
+Django==5.0.14
+djangorestframework==3.16.0
+gunicorn
+whitenoise
+django-cors-headers==4.7.0
+django-extensions==4.1
+sqlparse==0.5.0
+crispy-bootstrap4==2024.10
+crispy-bootstrap5==2025.4
+django-crispy-forms==2.3
+
+# ── ML & Data ──
+tensorflow==2.17.0
+xgboost==2.1.2
+scikit-learn==1.5.2
+scipy==1.14.1
+numpy==1.26.4
+pandas==2.2.2
+joblib
+plotly
+seaborn
+
+# ── Deep Learning Infra ──
+jax==0.4.25
+jaxlib==0.4.25
+gast==0.6.0
+opt_einsum==3.4.0
+protobuf==4.25.5
+tensorboard<2.19
+tensorboard-data-server==0.7.2
+wrapt>=1.11.0
+
+# ── Scraping & APIs ──
+requests==2.32.3
+beautifulsoup4==4.12.3
+httpx
+selenium
+yt-dlp
+
+# ── Database Drivers ──
+mysqlclient==2.2.4
+PyMySQL==1.1.1
+
+# ── Utilities ──
+python-dateutil
+pytz
+PyYAML
+rich
+colorama
+virtualenv
+urllib3
+
+# ── Optional Web UI ──
+streamlit==1.45.1
+altair==5.4.1
+pydeck
