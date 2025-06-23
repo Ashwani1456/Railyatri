@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "Railyatri/wsgi.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "Railyatri/wsgi.py"
+    }
+  ],
+  "installCommand": "pip3 install -r requirements-vercel.txt"
+}
