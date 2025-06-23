@@ -1,57 +1,50 @@
 # ── Web Framework ──
 Django==5.0.14
 djangorestframework==3.16.0
-gunicorn
-whitenoise
+gunicorn==21.2.0
+whitenoise==6.6.0
 django-cors-headers==4.7.0
-django-extensions==4.1
-sqlparse==0.5.0
-crispy-bootstrap4==2024.10
-crispy-bootstrap5==2025.4
 django-crispy-forms==2.3
+crispy-bootstrap5==2025.4
+sqlparse==0.5.0
 
 # ── ML & Data ──
 tensorflow==2.17.0
-xgboost==2.1.2
 scikit-learn==1.5.2
-scipy==1.14.1
+xgboost==2.1.2
 numpy==1.26.4
 pandas==2.2.2
-joblib
-plotly
-seaborn
+scipy==1.14.1
+joblib==1.4.2
+seaborn==0.13.2
+plotly==5.22.0
 
 # ── Deep Learning Infra ──
 jax==0.4.25
 jaxlib==0.4.25
+opt_einsum==3.3.0
 gast==0.6.0
-opt_einsum==3.4.0
 protobuf==4.25.5
-tensorboard<2.19
+tensorboard==2.18.0
 tensorboard-data-server==0.7.2
-wrapt>=1.11.0
+wrapt==1.15.0
 
 # ── Scraping & APIs ──
 requests==2.32.3
 beautifulsoup4==4.12.3
-httpx
-selenium
-yt-dlp
+httpx==0.27.0
 
 # ── Database Drivers ──
 mysqlclient==2.2.4
-PyMySQL==1.1.1
 
 # ── Utilities ──
-python-dateutil
-pytz
-PyYAML
-rich
-colorama
-virtualenv
-urllib3
+pytz==2024.1
+python-dateutil==2.9.0
+PyYAML==6.0.1
+rich==13.7.1
+colorama==0.4.6
+urllib3==2.2.1
 
 # ── Optional Web UI ──
-streamlit==1.45.1
+streamlit==1.35.0
 altair==5.4.1
-
