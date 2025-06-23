@@ -1,26 +1,17 @@
 import os
 from pathlib import Path
 
-# === Path Config ===
+# === Base Directory ===
 BASE_DIR = Path(__file__).resolve().parent.parent
-PROJECT_DIR = Path(__file__).resolve().parent
-SITE_ROOT = PROJECT_DIR
 
 # === Security ===
-SECRET_KEY = '2h=hk-okw&m=y^r=eier4cw*6@fa=7h(lqrs4b=3yci0r$fven'
-DEBUG = True
+SECRET_KEY = os.environ.get('SECRET_KEY', 'your-dev-secret-key')
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = [
-    '127.0.0.1',
-    'localhost',
-    '.ngrok-free.app',  # wildcard for Ngrok tunnels
-]
+ALLOWED_HOSTS = ['your-app-name.onrender.com', 'localhost', '127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['https://railyatri.onrender.com/']
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://*.ngrok-free.app',
-]
-
-# === Application Definitions ===
+# === Installed Apps ===
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -30,7 +21,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # 3rd-party
-    'authtools',
     'crispy_forms',
     'crispy_bootstrap4',
     'rest_framework',
@@ -42,8 +32,10 @@ INSTALLED_APPS = [
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
+# === Middleware ===
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # For static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -52,8 +44,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# === URL & WSGI ===
 ROOT_URLCONF = 'Railyatri.urls'
+WSGI_APPLICATION = 'Railyatri.wsgi.application'
 
+# === Templates ===
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -70,9 +65,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'Railyatri.wsgi.application'
-
-# === Database ===
+# === Database === (SQLite for now)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -80,23 +73,17 @@ DATABASES = {
     }
 }
 
-# === Password Validation ===
-AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
-]
-
-# === Localization ===
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'Asia/Kolkata'
-USE_I18N = True
-USE_L10N = False  # Deprecated in Django 4.0+
-USE_TZ = True
-
 # === Static Files ===
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-STATIC_ROOT = PROJECT_DIR / 'static'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# === Time & Language ===
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'Asia/Kolkata'
+USE_I18N = True
+USE_TZ = True
+
+# === Auth ===
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
